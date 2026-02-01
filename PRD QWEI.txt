@@ -1,0 +1,114 @@
+PRD: QWEI
+
+
+📄 PRD: QWEI – Intelligent News Orchestrator
+
+1. Visão Geral do Produto
+A QWEI é uma plataforma de automação de marketing de alto nível que transforma notícias de tecnologia em posts de redes sociais (Instagram e LinkedIn). O sistema utiliza uma arquitetura de múltiplos agentes no Supabase, gera artes minimalistas via Nano Banana, e utiliza o WhatsApp (Wazapi) como centro de aprovação humana antes da publicação final.
+
+2. Identidade Visual & UX (Estilo Clean)
+Nome da Marca: QWEI.
+
+Conceito: Minimalismo Suíço / "Quiet Tech".
+
+Interface: Next.js com Shadcn/UI.
+
+Cromia: Fundo Branco (#FFFFFF), Sidebar Cinza Fumaça (#F8FAFC), Texto Preto Antracite (#121212).
+
+Tipografia: Inter para UI; JetBrains Mono para metadados técnicos.
+
+3. Arquitetura de Dados (PostgreSQL)
+SQL
+-- Status do fluxo de trabalho
+CREATE TYPE post_status AS ENUM (
+  'scraping', 'editing', 'designing', 'pending_approval', 'approved', 'published', 'failed'
+);
+
+CREATE TABLE posts (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  source_title text,
+  source_link text,
+  content_raw text,
+  caption_instagram text,
+  copy_linkedin text,
+  image_url text,
+  image_prompt text,
+  status post_status DEFAULT 'scraping',
+  created_at timestamptz DEFAULT now(),
+  published_at timestamptz
+);
+
+CREATE TABLE credentials (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  provider text UNIQUE, -- 'instagram', 'linkedin', 'wazapi', 'nanobanana'
+  token text,
+  refresh_token text,
+  account_id text,
+  updated_at timestamptz DEFAULT now()
+);
+4. Ecossistema de Edge Functions (Supabase)
+EF 1: news-curator (O Agente Scraper)
+Trigger: Cron Job (Ex: a cada 6 horas).
+
+Ação: Busca notícias via API (Tavily/Exa).
+
+Saída: Cria registro na tabela posts com status editing.
+
+EF 2: qwei-editor (O Agente Redator)
+Input: content_raw.
+
+IA: OpenAI GPT-4o.
+
+Treinamento: "Voz QWEI: Direta, sem clichês, profissional e minimalista."
+
+Saída: Preenche caption_instagram e copy_linkedin. Muda status para designing.
+
+EF 3: qwei-designer (O Agente Visual)
+IA: Nano Banana API.
+
+Prompt de Marca: "Minimalist editorial tech photography, soft lighting, white/gray tones, 8k."
+
+Saída: Preenche image_url. Muda status para pending_approval.
+
+EF 4: wazapi-notifier (O Agente de Notificação)
+Ação: Envia mensagem via Wazapi para o administrador.
+
+Conteúdo: Imagem gerada + Título + Botões Interativos ("Aprovar" | "Regerar").
+
+EF 5: wazapi-webhook (O Agente de Resposta)
+Ação: Recebe o clique do botão do WhatsApp.
+
+Lógica: Se "Aprovar" -> Status = approved -> Chama EF 6. Se "Regerar" -> Volta para editing.
+
+EF 6: social-publisher (O Agente de Postagem)
+Ação: Realiza o upload final.
+
+API Meta: Endpoint /photos para Instagram.
+
+API LinkedIn: Endpoint /ugcPosts para LinkedIn.
+
+5. Requisitos do Frontend (Next.js)
+Sidebar: Estreita, ícones em linha (Lucide React), logo QWEI no topo.
+
+Dashboard Feed: * Exibição de cards minimalistas (Shadow-sm, Border-0.5).
+
+Preview da imagem lado a lado com as abas de texto (Insta/LinkedIn).
+
+Botão de aprovação manual para override do WhatsApp.
+
+Settings Page: Gerenciamento dos tokens salvos na tabela credentials.
+
+⚡ Prompt de Execução para Anticraft
+"Aja como Arquiteto de Software. Implemente a plataforma QWEI usando o PRD acima.
+
+Banco de Dados: Use o MCP para rodar o SQL de tabelas e tipos ENUM.
+
+Backend: Crie as 6 Edge Functions no diretório /supabase/functions seguindo a lógica de orquestração descrita. Garanta que a integração com Wazapi use o endpoint de botões.
+
+Frontend: Gere a interface Next.js ultra-clean com Tailwind. O design deve ser focado em 'espaço negativo' e tipografia refinada.
+
+Prompt Engineering: No agente editor, injete o System Prompt de voz minimalista da QWEI.
+
+Agente Designer: Configure o prompt base da Nano Banana para manter a estética branca/cinza editorial em todas as imagens.
+
+Comece pela infraestrutura de banco e me mostre a árvore de arquivos."
