@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+:root {
+  /* QWEI Design Tokens - Swiss Minimalism */
+  --background: #FFFFFF;
+  --sidebar: #F8FAFC;
+  --text-primary: #121212;
+  --text-secondary: #64748B;
+  --border: #E2E8F0;
+  --accent: #0F172A;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --error: #EF4444;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* JetBrains Mono for technical metadata */
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* Ultra-clean shadows */
+.shadow-soft {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* Minimal borders */
+.border-minimal {
+  border: 0.5px solid var(--border);
+}
+
+/* Status badges */
+.status-scraping { background: #DBEAFE; color: #1E40AF; }
+.status-editing { background: #FEF3C7; color: #92400E; }
+.status-designing { background: #E0E7FF; color: #3730A3; }
+.status-pending_approval { background: #FFEDD5; color: #9A3412; }
+.status-approved { background: #D1FAE5; color: #065F46; }
+.status-published { background: #DCFCE7; color: #166534; }
+.status-failed { background: #FEE2E2; color: #991B1B; }
+
+/* Smooth transitions */
+.transition-smooth {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
